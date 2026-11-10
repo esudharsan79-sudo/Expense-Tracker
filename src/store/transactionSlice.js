@@ -27,6 +27,10 @@ const transactionSlice = createSlice({
     addTransaction: (state, action) => {
       state.list.unshift({ ...action.payload, id: uuidv4() });
     },
+    updateTransaction: (state, action) => {
+      const index = state.list.findIndex((t) => t.id === action.payload.id);
+      if (index !== -1) state.list[index] = { ...state.list[index], ...action.payload };
+    },
     deleteTransaction: (state, action) => {
       state.list = state.list.filter((t) => t.id !== action.payload);
     },
@@ -44,6 +48,7 @@ const transactionSlice = createSlice({
 
 export const {
   addTransaction,
+  updateTransaction,
   deleteTransaction,
   setFilter,
   setSearchQuery,
