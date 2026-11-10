@@ -18,11 +18,26 @@ export default function CurrencyRates() {
   const fetchRates = async () => {
     setLoading(true);
     setError(null);
+    const symbols = currencies.map((c) => c.code).join(",");
+    const urls = [
+      `https://api.frankfurter.dev/v1/latest?base=INR&symbols=${symbols}`,
+      `https://api.frankfurter.app/latest?from=INR&to=${symbols}`,
+    ];
     try {
-      const symbols = currencies.map((c) => c.code).join(",");
-      const res = await fetch(`https://api.frankfurter.app/latest?from=INR&to=${symbols}`);
-      if (!res.ok) throw new Error("Network error");
-      const data = await res.json();
+      let data = null;
+      let lastErr = null;
+      for (const url of urls) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`HTTP ${res.status} from ${url}`);
+          data = await res.json();
+          break;
+        } catch (e) {
+          lastErr = e;
+          console.error("Exchange rate fetch failed:", e);
+        }
+      }
+      if (!data || !data.rates) throw lastErr || new Error("No rates in response");
       setRates(data.rates);
       setRateDate(data.date);
     } catch (e) {
@@ -45,7 +60,7 @@ export default function CurrencyRates() {
             <span className="ml-2 text-xs font-normal bg-green-900/40 text-green-400 border border-green-700 px-2 py-0.5 rounded-full">LIVE</span>
           </h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            1 INR to major currencies · Frankfurter API{rateDate && ` · ${rateDate}`}
+            1 INR to major currencies · Frankfurter API{rateDate && ` · ${rateDate}`}
           </p>
         </div>
         <button
