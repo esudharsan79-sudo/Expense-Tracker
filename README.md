@@ -2,6 +2,7 @@
 
 A personal expense tracker built with Redux Toolkit and Recharts. Tracks income/expenses, shows spending patterns, and lets you set per-category budgets.
 
+🔗 **Live demo:** https://expense-tracker-five-snowy-24.vercel.app/
 ## Stack
 
 - React 18
